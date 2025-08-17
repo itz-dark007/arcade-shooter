@@ -10,7 +10,7 @@ let gameOver = false;
 
 let keys = {};
 
-// Listen for key presses
+
 document.addEventListener("keydown", (e) => {
   keys[e.key] = true;
 });
@@ -18,32 +18,32 @@ document.addEventListener("keyup", (e) => {
   keys[e.key] = false;
 });
 
-// Draw the player ship
+
 function drawShip() {
   ctx.save();
   ctx.translate(ship.x + ship.width / 2, ship.y + ship.height / 2);
 
-  // Main body
+  
   ctx.beginPath();
-  ctx.moveTo(0, -20); // Nose
-  ctx.lineTo(15, 20); // Right wing tip
-  ctx.lineTo(-15, 20); // Left wing tip
+  ctx.moveTo(0, -20);
+  ctx.lineTo(15, 20);
+  ctx.lineTo(-15, 20);
   ctx.closePath();
   ctx.fillStyle = "white";
   ctx.fill();
 
-  // Cockpit
+  
   ctx.beginPath();
   ctx.arc(0, -10, 5, 0, Math.PI * 2);
   ctx.fillStyle = "cyan";
   ctx.fill();
 
-  // Side engines
+  
   ctx.fillStyle = "orange";
   ctx.fillRect(-15, 15, 5, 8);
   ctx.fillRect(10, 15, 5, 8);
 
-  // Thrusters :
+  
   ctx.beginPath();
   ctx.moveTo(-10, 23);
   ctx.lineTo(0, 30 + Math.random() * 5); // Random flicker
@@ -54,19 +54,19 @@ function drawShip() {
   ctx.restore();
 }
 
-// Draw bullets
+
 function drawBullets() {
   ctx.fillStyle = "red";
   bullets.forEach((b) => ctx.fillRect(b.x, b.y, 4, 10));
 }
 
-// Draw enemies
+
 function drawEnemies() {
   ctx.fillStyle = "lime";
   enemies.forEach((e) => ctx.fillRect(e.x, e.y, e.width, e.height));
 }
 
-// Check collision between two rectangles
+
 function checkCollision(a, b) {
   return (
     a.x < b.x + b.width &&
@@ -76,13 +76,12 @@ function checkCollision(a, b) {
   );
 }
 
-// Update game state
 function update() {
-  // Move ship
+  
   if (keys["ArrowLeft"] && ship.x > 0) ship.x -= 5;
   if (keys["ArrowRight"] && ship.x < canvas.width - ship.width) ship.x += 5;
 
-  // Shoot bullet
+  
   if (keys[" "]) {
     if (
       bullets.length === 0 ||
@@ -96,20 +95,20 @@ function update() {
     }
   }
 
-  // Move bullets
+  
   bullets.forEach((b) => (b.y -= 8));
   bullets = bullets.filter((b) => b.y > 0);
 
-  // Spawn enemies
+  
   if (Math.random() < 0.02) {
     enemies.push({ x: Math.random() * 360, y: 0, width: 40, height: 20 });
   }
 
-  // Move enemies
+  
   enemies.forEach((e) => (e.y += 2));
   enemies = enemies.filter((e) => e.y < canvas.height);
 
-  // Bullet hits enemy
+  
 for (let i = bullets.length - 1; i >= 0; i--) {
   for (let j = enemies.length - 1; j >= 0; j--) {
     if (
@@ -126,7 +125,7 @@ for (let i = bullets.length - 1; i >= 0; i--) {
   }
 }
 
-  // Enemy hits ship → GAME OVER
+  
   for (let i = 0; i < enemies.length; i++) {
     if (checkCollision(ship, enemies[i])) {
       gameOver = true;
@@ -135,14 +134,14 @@ for (let i = bullets.length - 1; i >= 0; i--) {
   }
 }
 
-//Scoreboard :
+
 function drawScore() {
   ctx.fillStyle = "white";
   ctx.font = "20px Arial";
   ctx.fillText("Score: " + score, 10, 30);
 }
 
-// Display "Game Over"
+
 function drawGameOver() {
   ctx.fillStyle = "red";
   ctx.font = "48px Arial";
@@ -150,7 +149,7 @@ function drawGameOver() {
   ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
 }
 
-// Game loop
+
 function loop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -166,7 +165,7 @@ function loop() {
   }
 }
 
-// Restart logic
+
 restartBtn.addEventListener("click", () => {
   ship = { x: 180, y: 550, width: 40, height: 20 };
   bullets = [];
@@ -177,3 +176,4 @@ restartBtn.addEventListener("click", () => {
 });
 
 loop();
+
