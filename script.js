@@ -27,13 +27,31 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("keyup", (e) => keys[e.code] = false);
 
 function drawShip() {
-    ctx.fillStyle = "cyan";
+    ctx.fillStyle = "white";
     ctx.beginPath();
     ctx.moveTo(ship.x + ship.width / 2, ship.y); 
     ctx.lineTo(ship.x, ship.y + ship.height); 
     ctx.lineTo(ship.x + ship.width, ship.y + ship.height); 
     ctx.closePath();
     ctx.fill();
+
+    ctx.fillStyle = "cyan";
+    ctx.beginPath();
+    ctx.arc(ship.x + ship.width / 2, ship.y - 10, 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "yellow";
+    ctx.beginPath();
+    ctx.moveTo(ship.x + 10, ship.y + ship.height);
+    ctx.lineTo(ship.x + ship.width - 10, ship.y + ship.height);
+    ctx.lineTo(ship.x + ship.width - 15, ship.y + ship.height + 10);
+    ctx.lineTo(ship.x + 15, ship.y + ship.height + 10);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "orange";
+    ctx.fillRect(ship.x - 5, ship.y + ship.height - 10, 8, 12);
+    ctx.fillRect(ship.x + ship.width - 3, ship.y + ship.height - 10, 8, 12);
 }
 
 function drawBullets() {
@@ -146,3 +164,4 @@ function gameLoop() {
 }
 
 gameLoop();
+
