@@ -1,167 +1,222 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+const restartBtn = document.getElementById("restartBtn");
 
-canvas.width = 800;
-canvas.height = 600;
-
-let ship = {
-    x: canvas.width / 2 - 20,
-    y: canvas.height - 60,
-    width: 40,
-    height: 40,
-    speed: 5
-};
-
+let ship = { x: 180, y: 550, width: 40, height: 20 };
+let score = 0;
 let bullets = [];
 let enemies = [];
-let keys = {};
 let gameOver = false;
-let score = 0;
 
+let keys = {};
+
+// Listen for key presses
 document.addEventListener("keydown", (e) => {
-    keys[e.code] = true;
-    if (e.code === "Space" && !gameOver) {
-        bullets.push({ x: ship.x + ship.width / 2 - 2.5, y: ship.y, width: 5, height: 10 });
-    }
+  keys[e.key] = true;
 });
-document.addEventListener("keyup", (e) => keys[e.code] = false);
+document.addEventListener("keyup", (e) => {
+  keys[e.key] = false;
+});
 
+// Draw the player ship
 function drawShip() {
-    ctx.fillStyle = "white";
-    ctx.beginPath();
-    ctx.moveTo(ship.x + ship.width / 2, ship.y); 
-    ctx.lineTo(ship.x, ship.y + ship.height); 
-    ctx.lineTo(ship.x + ship.width, ship.y + ship.height); 
-    ctx.closePath();
-    ctx.fill();
+  ctx.save();
+  ctx.translate(ship.x + ship.width / 2, ship.y + ship.height / 2);
 
-    ctx.fillStyle = "cyan";
-    ctx.beginPath();
-    ctx.arc(ship.x + ship.width / 2, ship.y - 10, 8, 0, Math.PI * 2);
-    ctx.fill();
+  // Main body
+  ctx.beginPath();
+  ctx.moveTo(0, -20); // Nose
+  ctx.lineTo(15, 20); // Right wing tip
+  ctx.lineTo(-15, 20); // Left wing tip
+  ctx.closePath();
+  ctx.fillStyle = "white";
+  ctx.fill();
 
-    ctx.fillStyle = "yellow";
-    ctx.beginPath();
-    ctx.moveTo(ship.x + 10, ship.y + ship.height);
-    ctx.lineTo(ship.x + ship.width - 10, ship.y + ship.height);
-    ctx.lineTo(ship.x + ship.width - 15, ship.y + ship.height + 10);
-    ctx.lineTo(ship.x + 15, ship.y + ship.height + 10);
-    ctx.closePath();
-    ctx.fill();
+  // Cockpit
+  ctx.beginPath();
+  ctx.arc(0, -10, 5, 0, Math.PI * 2);
+  ctx.fillStyle = "cyan";
+  ctx.fill();
 
-    ctx.fillStyle = "orange";
-    ctx.fillRect(ship.x - 5, ship.y + ship.height - 10, 8, 12);
-    ctx.fillRect(ship.x + ship.width - 3, ship.y + ship.height - 10, 8, 12);
+  // Side engines
+  ctx.fillStyle = "orange";
+  ctx.fillRect(-15, 15, 5, 8);
+  ctx.fillRect(10, 15, 5, 8);
+
+  // Thrusters :
+  ctx.beginPath();
+  ctx.moveTo(-10, 23);
+  ctx.lineTo(0, 30 + Math.random() * 5); // Random flicker
+  ctx.lineTo(10, 23);
+  ctx.fillStyle = "yellow";
+  ctx.fill();
+
+  ctx.restore();
 }
 
+// Draw bullets
 function drawBullets() {
-    ctx.fillStyle = "yellow";
-    bullets.forEach((bullet, index) => {
-        bullet.y -= 7;
-        ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
-        if (bullet.y < 0) bullets.splice(index, 1);
-    });
+  ctx.fillStyle = "red";
+  bullets.forEach((b) => ctx.fillRect(b.x, b.y, 4, 10));
 }
 
+// Draw enemies
 function drawEnemies() {
-    ctx.fillStyle = "red";
-    enemies.forEach((enemy, eIndex) => {
-        enemy.y += 2;
-        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-
-        // Collision with ship → Game Over
-        if (enemy.x < ship.x + ship.width &&
-            enemy.x + enemy.width > ship.x &&
-            enemy.y < ship.y + ship.height &&
-            enemy.y + enemy.height > ship.y) {
-            gameOver = true;
-        }
-
-        // Bullet collision
-        bullets.forEach((bullet, bIndex) => {
-            if (bullet.x < enemy.x + enemy.width &&
-                bullet.x + bullet.width > enemy.x &&
-                bullet.y < enemy.y + enemy.height &&
-                bullet.y + bullet.height > enemy.y) {
-                enemies.splice(eIndex, 1);
-                bullets.splice(bIndex, 1);
-                score += 10; // add to score
-            }
-        });
-
-        // Enemy goes off screen → remove
-        if (enemy.y > canvas.height) {
-            enemies.splice(eIndex, 1);
-        }
-    });
+  ctx.fillStyle = "lime";
+  enemies.forEach((e) => ctx.fillRect(e.x, e.y, e.width, e.height));
 }
 
+// Check collision between two rectangles
+function checkCollision(a, b) {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
+}
+
+// Update game state
+function update() {
+  // Move ship
+  if (keys["ArrowLeft"] && ship.x > 0) ship.x -= 5;
+  if (keys["ArrowRight"] && ship.x < canvas.width - ship.width) ship.x += 5;
+
+  // Shoot bullet
+  if (keys[" "]) {
+    if (
+      bullets.length === 0 ||
+      Date.now() - bullets[bullets.length - 1].time > 300
+    ) {
+      bullets.push({
+        x: ship.x + ship.width / 2 - 2,
+        y: ship.y,
+        time: Date.now(),
+      });
+    }
+  }
+
+  // Move bullets
+  bullets.forEach((b) => (b.y -= 8));
+  bullets = bullets.filter((b) => b.y > 0);
+
+  // Spawn enemies
+  if (Math.random() < 0.02) {
+    enemies.push({ x: Math.random() * 360, y: 0, width: 40, height: 20 });
+  }
+
+  // Move enemies
+  enemies.forEach((e) => (e.y += 2));
+  enemies = enemies.filter((e) => e.y < canvas.height);
+
+  // Bullet hits enemy
+for (let i = bullets.length - 1; i >= 0; i--) {
+  for (let j = enemies.length - 1; j >= 0; j--) {
+    if (
+      bullets[i].x < enemies[j].x + enemies[j].width &&
+      bullets[i].x + 4 > enemies[j].x &&
+      bullets[i].y < enemies[j].y + enemies[j].height &&
+      bullets[i].y + 10 > enemies[j].y
+    ) {
+      bullets.splice(i, 1);
+      enemies.splice(j, 1);
+      score += 5;
+      break;
+    }
+  }
+}
+
+  // Enemy hits ship → GAME OVER
+  for (let i = 0; i < enemies.length; i++) {
+    if (checkCollision(ship, enemies[i])) {
+      gameOver = true;
+      break;
+    }
+  }
+}
+
+//Scoreboard :
 function drawScore() {
-    ctx.fillStyle = "white";
-    ctx.font = "20px Arial";
-    ctx.fillText("Score: " + score, 20, 30);
+  ctx.fillStyle = "white";
+  ctx.font = "20px Arial";
+  ctx.fillText("Score: " + score, 10, 30);
 }
 
-function spawnEnemies() {
-    if (Math.random() < 0.02) {
-        enemies.push({
-            x: Math.random() * (canvas.width - 30),
-            y: -30,
-            width: 30,
-            height: 30
-        });
-    }
-}
-
-function restartGame() {
-    gameOver = false;
-    enemies = [];
-    bullets = [];
-    score = 0;
-    ship.x = canvas.width / 2 - 20;
-    ship.y = canvas.height - 60;
-    gameLoop();
-}
-
+// Display "Game Over"
 function drawGameOver() {
-    ctx.fillStyle = "white";
-    ctx.font = "40px Arial";
-    ctx.fillText("GAME OVER", canvas.width / 2 - 120, canvas.height / 2 - 40);
-
-    let restartBtn = document.createElement("button");
-    restartBtn.innerText = "Restart";
-    restartBtn.style.position = "absolute";
-    restartBtn.style.left = canvas.offsetLeft + canvas.width / 2 - 50 + "px";
-    restartBtn.style.top = canvas.offsetTop + canvas.height / 2 + "px";
-    restartBtn.style.padding = "10px 20px";
-    restartBtn.style.fontSize = "18px";
-    document.body.appendChild(restartBtn);
-
-    restartBtn.onclick = () => {
-        restartBtn.remove();
-        restartGame();
-    };
+  ctx.fillStyle = "red";
+  ctx.font = "48px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
 }
 
-function gameLoop() {
-    if (gameOver) {
-        drawGameOver();
-        return;
-    }
+// Game loop
+function loop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (keys["ArrowLeft"] && ship.x > 0) ship.x -= ship.speed;
-    if (keys["ArrowRight"] && ship.x + ship.width < canvas.width) ship.x += ship.speed;
-
+  if (!gameOver) {
+    update();
     drawShip();
     drawBullets();
     drawEnemies();
-    drawScore();
-    spawnEnemies();
-
-    requestAnimationFrame(gameLoop);
+    requestAnimationFrame(loop);
+  } else {
+    drawGameOver();
+    restartBtn.style.display = "block";
+  }
 }
 
-gameLoop();
+// Restart logic
+restartBtn.addEventListener("click", () => {
+  ship = { x: 180, y: 550, width: 40, height: 20 };
+  bullets = [];
+  enemies = [];
+  gameOver = false;
+  restartBtn.style.display = "none";
+  loop();
+});
+function drawScoreboard() {
+  ctx.fillStyle = "white";
+  ctx.font = "20px Arial";
+  ctx.textAlign = "left";
+  ctx.fillText("Score: " + score, 10, 30);
+}
 
+// Update score logic to +10 per enemy destroyed
+function updateScoreOnEnemyDestroyed() {
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    for (let j = enemies.length - 1; j >= 0; j--) {
+      if (
+        bullets[i].x < enemies[j].x + enemies[j].width &&
+        bullets[i].x + 4 > enemies[j].x &&
+        bullets[i].y < enemies[j].y + enemies[j].height &&
+        bullets[i].y + 10 > enemies[j].y
+      ) {
+        bullets.splice(i, 1);
+        enemies.splice(j, 1);
+        score += 10;
+        break;
+      }
+    }
+  }
+}
+restartBtn.addEventListener("click", () => {
+  score = 0;
+});
+
+function loop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (!gameOver) {
+    update();
+    drawShip();
+    drawBullets();
+    drawEnemies();
+    drawScoreboard();
+    requestAnimationFrame(loop);
+  } else {
+    drawGameOver();
+    restartBtn.style.display = "block";
+  }
+}
+loop();
