@@ -99,7 +99,10 @@ function update() {
   // Move bullets
   bullets.forEach((b) => (b.y -= 8));
   bullets = bullets.filter((b) => b.y > 0);
-
+  // Reduce ship speed for smoother movement
+  const shipSpeed = 3;
+  if (keys["ArrowLeft"] && ship.x > 0) ship.x -= shipSpeed;
+  if (keys["ArrowRight"] && ship.x < canvas.width - ship.width) ship.x += shipSpeed;
   // Spawn enemies
   if (Math.random() < 0.02) {
     enemies.push({ x: Math.random() * 360, y: 0, width: 40, height: 20 });
@@ -200,10 +203,15 @@ function updateScoreOnEnemyDestroyed() {
     }
   }
 }
+
+// Replace the original enemy destroy logic in update() with updateScoreOnEnemyDestroyed()
+
+// Reset score when player dies
 restartBtn.addEventListener("click", () => {
   score = 0;
 });
 
+// Draw scoreboard in game loop
 function loop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -219,4 +227,96 @@ function loop() {
     restartBtn.style.display = "block";
   }
 }
-loop();
+let lives = 3;
+
+// Draw lives on screen
+function drawLives() {
+  ctx.fillStyle = "white";
+  ctx.font = "20px Arial";
+  ctx.textAlign = "right";
+  if (lives === 0) {
+    restartBtn.style.display = "block";
+  }
+  ctx.fillText("Lives: " + lives, canvas.width - 10, 30);
+}
+
+// Update game state (modify enemy hits ship and enemy reaches end)
+function update() {
+  // Move ship
+  if (keys["ArrowLeft"] && ship.x > 0) ship.x -= 5;
+  if (keys["ArrowRight"] && ship.x < canvas.width - ship.width) ship.x += 5;
+
+  // Shoot bullet
+  if (keys[" "]) {
+    if (
+      bullets.length === 0 ||
+      Date.now() - bullets[bullets.length - 1].time > 300
+    ) {
+      bullets.push({
+        x: ship.x + ship.width / 2 - 2,
+        y: ship.y,
+        time: Date.now(),
+      });
+    }
+  }
+
+  // Move bullets
+  bullets.forEach((b) => (b.y -= 8));
+  bullets = bullets.filter((b) => b.y > 0);
+
+  // Spawn enemies
+  if (Math.random() < 0.02) {
+    enemies.push({ x: Math.random() * 360, y: 0, width: 40, height: 20 });
+  }
+
+  // Move enemies
+  enemies.forEach((e) => (e.y += 2));
+
+  // Bullet hits enemy
+  updateScoreOnEnemyDestroyed();
+
+  // Enemy hits ship or reaches bottom
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    if (checkCollision(ship, enemies[i]) || enemies[i].y + enemies[i].height >= canvas.height) {
+      lives--;
+      gameOver = true;
+      break;
+    }
+  }
+
+  // Remove enemies that reached bottom
+  enemies = enemies.filter((e) => e.y < canvas.height);
+}
+
+// Restart logic
+restartBtn.addEventListener("click", () => {
+  ship = { x: 180, y: 550, width: 40, height: 20 };
+  bullets = [];
+  enemies = [];
+  score = 0;
+  lives = 3;
+  gameOver = false;
+  restartBtn.style.display = "none";
+  // Only start the loop if not already running
+  requestAnimationFrame(loop);
+});
+
+// Draw scoreboard and lives in game loop
+function loop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (!gameOver) {
+    update();
+    drawShip();
+    drawBullets();
+    drawEnemies();
+    drawScoreboard();
+    drawLives();
+    requestAnimationFrame(loop);
+  } else {
+    drawGameOver();
+    restartBtn.style.display = "block";
+  }
+}
+requestAnimationFrame(loop);
+setTimeout(loop, 40);
