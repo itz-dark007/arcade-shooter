@@ -56,20 +56,36 @@ document.addEventListener("keyup", (e) => { keys[e.key] = false; });
 
 // draw
 function drawShip() {
-  // simple triangle ship using ship.width/height so it scales predictably
-  ctx.fillStyle = "white";
+  ctx.save();
+  ctx.translate(ship.x + ship.width / 2, ship.y + ship.height / 2);
+
+  // Main body
   ctx.beginPath();
-  ctx.moveTo(ship.x + ship.width / 2, ship.y);                 // tip
-  ctx.lineTo(ship.x + ship.width, ship.y + ship.height);      // bottom right
-  ctx.lineTo(ship.x, ship.y + ship.height);                   // bottom left
+  ctx.moveTo(0, -20); // Nose
+  ctx.lineTo(15, 20); // Right wing tip
+  ctx.lineTo(-15, 20); // Left wing tip
   ctx.closePath();
+  ctx.fillStyle = "white";
   ctx.fill();
 
-  // cockpit / window
+  // Cockpit
   ctx.beginPath();
+  ctx.arc(0, -10, 5, 0, Math.PI * 2);
   ctx.fillStyle = "cyan";
-  ctx.arc(ship.x + ship.width / 2, ship.y + ship.height * 0.35, 4, 0, Math.PI * 2);
   ctx.fill();
+
+  // Side engines
+  ctx.fillStyle = "orange";
+  ctx.fillRect(-15, 15, 5, 8);
+  ctx.fillRect(10, 15, 5, 8);
+  ctx.beginPath();
+  ctx.moveTo(-10, 23);
+  ctx.lineTo(0, 30 + Math.random() * 5); // Random flicker
+  ctx.lineTo(10, 23);
+  ctx.fillStyle = "yellow";
+  ctx.fill();
+
+  ctx.restore();
 }
 
 function drawBullets() {
@@ -306,3 +322,4 @@ function setupCanvasForDPR(cvs, ctx, cssW = 400, cssH = 600) {
   // clear to ensure no previous transparent content remains
   ctx.clearRect(0, 0, cvs.width, cvs.height);
 }
+
