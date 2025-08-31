@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Arcade Shooter</title>
+        <title>Arcade Hub</title>
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
@@ -14,9 +14,11 @@
                 <div class="buttons">
                     <button id="spaceShooterBtn" class="menu-button">Space Shooter</button>
                     <button id="tetrisBtn" class="menu-button outline">Tetris</button>
+                    <button id="pongBtn" class="menu-button outline">Pong</button> <!-- New Pong button -->
                 </div>
 
-            <div class="credits">Made with ♥ — That one guy</div>
+                <div class="credits">Made with ♥ — That one guy</div>
+            </div>
         </div>
 
         <div id="gameContainer" style="display: none; position: relative;">
@@ -28,6 +30,13 @@
             <canvas id="gameCanvas" width="400" height="600"></canvas>
             <button id="restartBtn" style="display: none;">Restart</button>
         </div>
+
+        <script>
+            // redirect pong button to pong.html
+            document.getElementById("pongBtn").addEventListener("click", () => {
+                window.location.href = "pong.html";
+            });
+        </script>
 
         <script src="script.js"></script>
     </body>

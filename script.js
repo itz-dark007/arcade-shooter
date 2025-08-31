@@ -243,7 +243,7 @@ if (spaceShooterBtn) {
     if (restartBtn) restartBtn.style.display = 'none';
     if (homeBtn) homeBtn.style.display = 'none';
     lastTime = performance.now();
-    gameRunning = true;
+    gameRunning = true; 
     requestAnimationFrame(loop);
   });
 }
@@ -322,4 +322,3 @@ function setupCanvasForDPR(cvs, ctx, cssW = 400, cssH = 600) {
   // clear to ensure no previous transparent content remains
   ctx.clearRect(0, 0, cvs.width, cvs.height);
 }
-
