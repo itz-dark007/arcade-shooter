@@ -1,43 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Arcade Hub</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <div id="mainMenu" class="menu">
-            <div class="menu-card">
-                <h1 class="title">Arcade Hub</h1>
-                <p class="subtitle">Choose your game</p>
-
-                <div class="buttons">
-                    <button id="spaceShooterBtn" class="menu-button">Space Shooter</button>
-                    <button id="tetrisBtn" class="menu-button outline">Tetris</button>
-                    <button id="pongBtn" class="menu-button outline">Pong</button> <!-- New Pong button -->
-                </div>
-
-                <div class="credits">Made with ♥ — That one guy</div>
-            </div>
-        </div>
-
-        <div id="gameContainer" style="display: none; position: relative;">
-            <!-- Home icon in top left, hidden by default -->
-            <button id="homeBtn" title="Home" style="display: none; position: absolute; top: 20px; left: 20px; background: none; border: none; cursor: pointer; z-index: 2;">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M3 12l9-9 9 9h-3v9h-12v-9h-3z"/></svg>
-            </button>
-
-            <canvas id="gameCanvas" width="400" height="600"></canvas>
-            <button id="restartBtn" style="display: none;">Restart</button>
-        </div>
-
-        <script>
-            // redirect pong button to pong.html
-            document.getElementById("pongBtn").addEventListener("click", () => {
-                window.location.href = "pong.html";
-            });
-        </script>
-
-        <script src="script.js"></script>
-    </body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Wave Rider</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Wave Rider Lite</h1>
+  <canvas id="gameCanvas" width="800" height="600" aria-label="Wave Rider game"></canvas>
+  <script src="script.js"></script>
+</body>
 </html>

@@ -1,177 +1,50 @@
-/* filepath: c:\Users\Shashank Kumar\OneDrive\Apps\arcade-shooter\style.css */
-/* ...existing code... */
-
-/* Page background + subtle animation */
-:root{
-  --bg1: #14120a;
-  --bg2: #2b2b12;
-  --accent: #57f3ff;
-  --accent2: #7fff3c;
-  --glass: rgba(255,255,255,0.04);
-}
-
-*{box-sizing:border-box}
-html,body{height:100%}
+/* simple centered layout and neon look */
+:root { --bg1:#0f0f0f; --bg2:#1a1a1a; --accent:#57f3ff; }
+html,body { height:100%; margin:0; }
 body{
   margin:0;
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: radial-gradient(ellipse at top, rgba(80,70,20,0.25), transparent 20%),
-              linear-gradient(180deg, var(--bg2), #000 65%);
+  font-family: Inter, Arial, sans-serif;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(87,243,255,0.04), transparent 6%),
+    linear-gradient(180deg, #14120a 0%, #000 75%);
   color:#fff;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  overflow: hidden;
-}
-
-/* animated stars / particles (pure CSS, subtle) */
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background-image:
-    radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
-    radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
-  background-size: 200px 200px, 400px 400px;
-  opacity:0.08;
-  mix-blend-mode: overlay;
-  animation: drift 18s linear infinite;
-  pointer-events:none;
-}
-@keyframes drift{ from{transform:translateY(0)} to{transform:translateY(-80px)} }
-
-/* Main menu card */
-.menu{
   height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
-  flex-direction:column;
-  gap:16px;
-  padding:40px;
-}
-.menu-card{
-  width:480px;
-  max-width:92%;
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-  border-radius:12px;
-  padding:28px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.04);
-  text-align:center;
-  position:relative;
   overflow:hidden;
-  backdrop-filter: blur(4px);
 }
 
-/* Neon title */
-.title{
-  margin:0 0 6px 0;
-  font-size:36px;
-  letter-spacing:1.5px;
-  color: #fff;
-  text-shadow:
-    0 2px 0 rgba(0,0,0,0.6),
-    0 0 12px rgba(87,243,255,0.08),
-    0 0 28px rgba(127,255,60,0.02);
-}
-.subtitle{
-  margin:0 0 20px 0;
-  color: rgba(255,255,255,0.75);
-  font-size:14px;
-}
-
-/* Buttons */
-.buttons{
-  display:flex;
-  gap:16px;
-  justify-content:center;
-  margin-bottom:12px;
-}
-.menu-button{
-  cursor:pointer;
-  user-select:none;
-  padding:14px 22px;
-  border-radius:10px;
-  border: none;
-  font-weight:600;
-  font-size:16px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.6), 0 0 18px rgba(87,243,255,0.03);
-  transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
-  outline: none;
-}
-.menu-button:hover{ transform: translateY(-4px) scale(1.02); filter:brightness(1.05); }
-.menu-button:active{ transform: translateY(-2px) scale(0.995); }
-
-/* accent styles */
-.menu-button:first-child{
-  background: linear-gradient(135deg, rgba(87,243,255,0.12), rgba(0,120,255,0.06));
-  box-shadow: 0 10px 30px rgba(0,120,255,0.08), 0 0 28px rgba(87,243,255,0.06);
-}
-.menu-button.outline{
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.06);
-  box-shadow: none;
-}
-
-/* hint + credits */
-.hint{ color: rgba(255,255,255,0.6); font-size:12px; margin-top:6px; }
-.credits{ color: rgba(255,255,255,0.12); font-size:12px; position:fixed; bottom:14px; right:18px; }
-
-/* Game container and canvas stay centered and responsive */
-#gameContainer{
-  display:none;
-  width: 400px;
+/* center game container (if you still use #gameContainer) */
+#gameContainer {
+  width: 800px;
   height: 600px;
   position: relative;
-}
-#gameContainer canvas {
-  width: 400px !important;
-  height: 600px !important;
-  display: block !important;
-  background: #000;
-  position: relative;
-  z-index: 1;
+  display: block;
+  box-shadow: 0 12px 60px rgba(0,0,0,0.7), 0 0 30px rgba(87,243,255,0.02) inset;
+  border-radius: 8px;
 }
 
-/* restart / home overlays default styling (will be toggled by JS) */
-#restartBtn{
-  display:none;
-  position:fixed;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:24px;
-  z-index:999;
-  padding:10px 16px;
-  background:#111;
-  color:#fff;
-  border:1px solid rgba(255,255,255,0.07);
-  border-radius:8px;
-}
-#homeBtn{
-  display:none;
-  position:fixed;
-  left:18px;
-  top:18px;
-  z-index:999;
-  background:transparent;
-  border:none;
-  color:#fff;
-  font-size:22px;
-}
-#homeBtn svg{ filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6)); }
-
-/* Accessibility focus */
-.menu-button:focus, #restartBtn:focus, #homeBtn:focus{
-  box-shadow: 0 0 0 4px rgba(87,243,255,0.08);
-  outline: none;
+/* canvas neon framing */
+canvas {
+  border-radius:6px;
+  box-shadow: 0 20px 80px rgba(0,0,0,0.7), 0 0 26px rgba(87,243,255,0.04);
+  background: linear-gradient(180deg, rgba(43,43,18,0.55), rgba(0,0,0,0.85));
+  display:block;
 }
 
-/* small responsive tweak */
-@media (max-width:520px){
-  .menu-card{ padding:20px; }
-  .title{ font-size:28px; }
-  .buttons{ flex-direction:column; }
-  .buttons .menu-button{ width:100%; }
+/* HUD */
+.hud {
+  position: absolute;
+  left: 16px;
+  top: 12px;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 8px;
+  font-family: Inter, Arial;
+  font-size: 14px;
+  color: #eafcff;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
 }
